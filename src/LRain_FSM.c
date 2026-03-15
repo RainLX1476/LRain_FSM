@@ -6,18 +6,21 @@
  * @brief	创建一个新状态机实例
  * @param[in]	buf	指向状态机存储空间的指针
  * @param[in]	size	状态机存储空间的大小
+ * @param[in]	tick_handler	时间获取回调函数(不使用该功能可填NULL)
  * @return	指向新创建的状态机实例的指针,创建失败返回NULL
  */
-fsm_t* fsm_create(void* buf, uint32_t size)
+fsm_t* fsm_create(void* buf, uint32_t size, uint32_t (*tick_handler)(void))
 {
 	if (buf == NULL) return NULL;
 	if (size < sizeof(fsm_t)) return 0;
 	fsm_t* ret = buf;
 	ret->state_max_count = (size - sizeof(fsm_t)) / sizeof(fsm_state_t);
 
-
+	ret->tick_handler = tick_handler;
 	ret->current_state = 0;
+	ret->next_state = 0;
 	ret->start_time = 0;
+	return ret;
 }
 
 /**
@@ -40,7 +43,10 @@ int32_t fsm_step(fsm_t* fsm)
 		current_state = next_state;
 	}
 
-	fsm->start_time = fsm_get_tick();
+	if (fsm->tick_handler != NULL) {
+		fsm->start_time = fsm->tick_handler();
+	}
+
 	if (current_state->handler == NULL) return -3;
 	fsm->next_state = current_state->handler(fsm, FSM_EVENT_DURING);
 

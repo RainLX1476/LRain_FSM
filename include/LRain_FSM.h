@@ -25,6 +25,7 @@ struct fsm_state
 struct fsm
 {
 	uint32_t start_time;
+	uint32_t (*tick_handler)(void);	//用户实现该时间戳获取函数
 	uint16_t current_state;
 	uint16_t next_state;
 	uint16_t state_max_count;
@@ -34,10 +35,9 @@ struct fsm
 
 
 
-fsm_t* fsm_create(void* buf, uint32_t size);
+fsm_t* fsm_create(void* buf, uint32_t size, uint32_t (*tick_handler)(void));
 int32_t fsm_add_state(fsm_t* fsm, uint16_t name, uint16_t (*handler)(fsm_t*, fsm_event));
 int32_t fsm_step(fsm_t* fsm);
-uint32_t fsm_get_tick(void);	//该函数定义在port.c文件夹内
 
 
 
@@ -62,7 +62,7 @@ static inline uint16_t fsm_get_state(fsm_t* fsm)
  * @retval	当前运行状态持续时间
  * @attention	该函数仅当用户实现了时间戳获取函数fsm_get_tick()时有效
  */
-static inline uint32_t fsm_get_state_time(fsm_t* fsm)
+static inline uint32_t fsm_get_time(fsm_t* fsm)
 {
 	return fsm_get_tick() - fsm->start_time;
 }

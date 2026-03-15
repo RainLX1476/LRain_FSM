@@ -12,9 +12,10 @@ include_directories(include)
 # 源文件
 set(SRC
 	src/LRain_FSM.c
+	src/port.c
 )
 
-add_library(LRain_RB ${SRC})
+add_library(LRain_FSM ${SRC})
 
 set(IS_ARM_NONE_EABI FALSE)
 if(CMAKE_C_COMPILER MATCHES "arm-none-eabi" OR CMAKE_CXX_COMPILER MATCHES "arm-none-eabi")
@@ -26,3 +27,16 @@ if(NOT IS_ARM_NONE_EABI)
 	enable_testing()
 	add_subdirectory(tests)
 endif()
+
+
+
+
+# 源文件
+set(SRC
+	examples/main.c
+)
+
+add_executable(examples ${SRC})
+
+target_link_libraries(examples LRain_FSM)
+

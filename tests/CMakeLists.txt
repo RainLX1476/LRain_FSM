@@ -6,6 +6,6 @@ set(TEST_SOURCES
 foreach(src ${TEST_SOURCES})
 	get_filename_component(target_name ${src} NAME_WE)
 	add_executable(${target_name} ${src})
-	target_link_libraries(${target_name} PRIVATE LRain_RB)
+	target_link_libraries(${target_name} PRIVATE LRain_FSM)
 	add_test(NAME ${target_name} COMMAND ${target_name})
 endforeach()

@@ -12,7 +12,6 @@ include_directories(include)
 # 源文件
 set(SRC
 	src/LRain_FSM.c
-	src/port.c
 )
 
 add_library(LRain_FSM ${SRC})

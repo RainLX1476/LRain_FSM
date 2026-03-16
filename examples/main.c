@@ -90,7 +90,7 @@ uint16_t state2_handler(fsm_t* fsm, fsm_event event)
 
 int main()
 {
-	fsm_t* fsm = fsm_create(buf, sizeof(buf));
+	fsm_t* fsm = fsm_create(buf, sizeof(buf), NULL);
 	fsm_add_state(fsm, INIT, init_handler);
 	fsm_add_state(fsm, STATE0, state0_handler);
 	fsm_add_state(fsm, STATE1, state1_handler);

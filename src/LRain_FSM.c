@@ -30,31 +30,53 @@ fsm_t* fsm_create(void* buf, uint32_t size, uint32_t (*tick_handler)(void))
  * @retval	-1	给定的状态机实例无效
  * @retval	-2	跳转状态超限
  * @retval	-3	运行状态句柄函数无效
+ * @retval	-4	下一个状态的处理函数无效
  */
 int32_t fsm_step(fsm_t* fsm)
 {
 	if (fsm == NULL) return -1;
-	fsm_state_t* current_state = &fsm->state[fsm->current_state];
-	fsm_state_t* next_state = &fsm->state[fsm->next_state];
-
+	
+	// 检查是否需要切换状态
 	if (fsm->next_state != fsm->current_state) {
+		// 验证下一个状态是否有效
+		if (fsm->next_state > fsm->state_max_count) return -2;
+		fsm_state_t* next_state = &fsm->state[fsm->next_state];
+		if (next_state->handler == NULL) return -4;
+		
+		// 调用当前状态的退出处理
+		fsm_state_t* current_state = &fsm->state[fsm->current_state];
+		if (current_state->handler != NULL) {
+			current_state->handler(fsm, FSM_EVENT_EXIT);
+		}
+		
+		// 调用下一个状态的初始化处理
 		next_state->handler(fsm, FSM_EVENT_INIT);
+		
+		// 更新当前状态
 		fsm->current_state = fsm->next_state;
-		current_state = next_state;
+		
+		// 重置开始时间
+		if (fsm->tick_handler != NULL) {
+			fsm->start_time = fsm->tick_handler();
+		}
 	}
-
-	if (fsm->tick_handler != NULL) {
-		fsm->start_time = fsm->tick_handler();
-	}
-
+	
+	// 获取当前状态
+	fsm_state_t* current_state = &fsm->state[fsm->current_state];
+	
+	// 检查当前状态的处理函数
 	if (current_state->handler == NULL) return -3;
-	fsm->next_state = current_state->handler(fsm, FSM_EVENT_DURING);
-
-	if (fsm->next_state  > fsm->state_max_count) return -2;
-
-	if (fsm->next_state != fsm->current_state) {
-		current_state->handler(fsm, FSM_EVENT_EXIT);
-	}
+	
+	// 运行当前状态的处理函数
+	uint16_t next_state_id = current_state->handler(fsm, FSM_EVENT_DURING);
+	
+	// 验证返回的状态ID
+	if (next_state_id > fsm->state_max_count) return -2;
+	
+	// 设置下一个状态
+	fsm->next_state = next_state_id;
+	
+	return 0;
 }
 
 /**

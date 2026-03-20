@@ -64,6 +64,7 @@ static inline uint16_t fsm_get_state(fsm_t* fsm)
  */
 static inline uint32_t fsm_get_time(fsm_t* fsm)
 {
+	if (fsm == NULL || fsm->tick_handler == NULL) return 0;
 	return fsm->tick_handler() - fsm->start_time;
 }
 

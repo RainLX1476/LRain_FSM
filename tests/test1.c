@@ -2,16 +2,11 @@
 #include "LRain_FSM.h"
 
 
-
+uint8_t buf[1024];
 
 
 int main()
 {
-	if (test()) {
-		printf("test success\n");
-		return 0;
-	} else {
-		printf("test failed\n");
-		return 0;
-	}
+	fsm_t* fsm = fsm_create(buf, sizeof(buf), NULL);
+
 }

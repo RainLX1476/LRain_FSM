@@ -60,7 +60,7 @@ static inline uint16_t fsm_get_state(fsm_t* fsm)
  * @brief	获取当前运行状态持续时间
  * @param[in]	fsm	状态机实例
  * @retval	当前运行状态持续时间
- * @attention	该函数仅当用户实现了时间戳获取函数fsm_get_tick()时有效
+ * @attention	仅当用户创建状态机实例时传入时间获取函数时有效
  */
 static inline uint32_t fsm_get_time(fsm_t* fsm)
 {

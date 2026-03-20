@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "FSM_conf.h"
+#include <stddef.h>
 
 
 struct fsm;
